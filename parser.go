@@ -24,7 +24,7 @@ func Parse(r io.Reader) ([]Link, error) {
 	for _, node := range nodes {
 		links = append(links, buildLink(node))
 	}
-	return nil, nil
+	return links, nil
 }
 
 func buildLink(n *html.Node) Link {
