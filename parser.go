@@ -2,6 +2,7 @@ package link
 
 import (
 	"io"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -27,6 +28,8 @@ func Parse(r io.Reader) ([]Link, error) {
 	return links, nil
 }
 
+// buildLink takes a node and create the appropriate
+// Link object with a given Href and Text value
 func buildLink(n *html.Node) Link {
 	var ret Link
 
@@ -36,9 +39,25 @@ func buildLink(n *html.Node) Link {
 			break
 		}
 	}
-	ret.Text = "TODO: parse text..."
+	ret.Text = text(n)
 	return ret
 
+}
+
+// Text removes any unwanted HTML tags from
+// a given string
+func text(n *html.Node) string {
+	if n.Type == html.TextNode {
+		return n.Data
+	}
+	if n.Type != html.ElementNode {
+		return ""
+	}
+	var ret string
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		ret += text(c) + " "
+	}
+	return strings.Join(strings.Fields(ret), " ")
 }
 
 // linkNodes return a list of <a> nodes
